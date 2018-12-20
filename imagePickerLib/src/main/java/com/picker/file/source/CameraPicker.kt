@@ -55,7 +55,7 @@ class CameraPicker : BaseFilePicker() {
                 if (permissionGranted) {
                     doPick(pickerContext, emitter)
                 } else {
-                    requestPermission(pickerContext, Manifest.permission.CAMERA)
+                    requestPermission(pickerContext, FilePickerConstants.REQUEST_CODE_CAMERA_PERMISSIONS, Manifest.permission.CAMERA)
                 }
             } catch (error: Throwable) {
                 if (!emitter.isDisposed) {

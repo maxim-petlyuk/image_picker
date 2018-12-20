@@ -41,14 +41,14 @@ class GalleryPicker : BaseFilePicker() {
 
     private fun decorateSingle(context: Context, input: Single<PickerResult>): Single<PickerResult> {
         return input
+                .retry(BiPredicate { count, error ->
+                    return@BiPredicate error is RepeatRequiresPermissionException
+                })
                 .flatMap {
                     return@flatMap filePathExtractor.getRealPath(context, it.filePath).getFile(context)
                             .inBackground()
                             .map { pickedFile -> PickerResult(Uri.fromFile(pickedFile)) }
                 }
-                .retry(BiPredicate { count, error ->
-                    return@BiPredicate error is RepeatRequiresPermissionException
-                })
     }
 
     private inner class RxGalleryPickerOnSubscribe(private val pickerContext: Any) : SingleOnSubscribe<PickerResult>, LifeCycle {
@@ -62,7 +62,7 @@ class GalleryPicker : BaseFilePicker() {
                 if (permissionGranted) {
                     doPick(pickerContext, emitter)
                 } else {
-                    requestPermission(pickerContext, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    requestPermission(pickerContext, FilePickerConstants.REQUEST_CODE_STORAGE_PERMISSIONS, Manifest.permission.READ_EXTERNAL_STORAGE)
                 }
             } catch (error: Throwable) {
                 if (!emitter.isDisposed) {
@@ -91,11 +91,11 @@ class GalleryPicker : BaseFilePicker() {
 
         override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
             when (requestCode) {
-                FilePickerConstants.REQUEST_CODE_GALLERY -> {
+                FilePickerConstants.REQUEST_CODE_STORAGE_PERMISSIONS -> {
                     emitter?.let { singleEmitter ->
                         if (!singleEmitter.isDisposed) {
-                            val isermissionGranted = isRequestedPermissionGranted(permissions, grantResults, Manifest.permission.READ_EXTERNAL_STORAGE)
-                            if (isermissionGranted) {
+                            val isPermissionGranted = isRequestedPermissionGranted(permissions, grantResults, Manifest.permission.READ_EXTERNAL_STORAGE)
+                            if (isPermissionGranted) {
                                 singleEmitter.onError(RepeatRequiresPermissionException())
                             } else {
                                 singleEmitter.onError(PermissionNotGrantedException())

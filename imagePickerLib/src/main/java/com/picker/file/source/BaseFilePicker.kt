@@ -23,13 +23,13 @@ abstract class BaseFilePicker : FilePicker {
         lifeCycleSet.onEach { it.onRequestPermissionsResult(requestCode, permissions, grantResults) }
     }
 
-    internal fun requestPermission(pickerContext: Any, vararg permission: String) {
+    internal fun requestPermission(pickerContext: Any, requestCode: Int, vararg permission: String) {
         if (pickerContext is Activity) {
-            ActivityCompat.requestPermissions(pickerContext, permission, FilePickerConstants.REQUEST_CODE_CAMERA_PERMISSIONS)
+            ActivityCompat.requestPermissions(pickerContext, permission, requestCode)
         }
 
         if (pickerContext is Fragment) {
-            pickerContext.requestPermissions(permission, FilePickerConstants.REQUEST_CODE_CAMERA_PERMISSIONS)
+            pickerContext.requestPermissions(permission, requestCode)
         }
     }
 
