@@ -1,6 +1,6 @@
 package com.picker.file.factory
 
-import com.acorns.android.refactored.components.filePicker.source.GalleryPicker
+import com.picker.file.source.GalleryPicker
 import com.picker.file.source.CameraPicker
 import com.picker.file.source.FilePicker
 

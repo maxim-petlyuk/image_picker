@@ -1,12 +1,10 @@
-package com.acorns.android.refactored.components.filePicker.source
+package com.picker.file.source
 
 import android.app.Activity
 import android.content.Intent
 import android.support.v4.app.Fragment
 import com.picker.file.FilePickerConstants
 import com.picker.file.PickerResult
-import com.picker.file.source.BaseFilePicker
-import com.picker.file.source.LifeCycle
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import io.reactivex.SingleOnSubscribe
