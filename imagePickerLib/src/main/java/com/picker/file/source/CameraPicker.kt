@@ -82,7 +82,7 @@ class CameraPicker : BaseFilePicker() {
             }
 
             savedFilePath = Uri.fromFile(photoFile)
-            val photoURI = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", photoFile)
+            val photoURI = FileProvider.getUriForFile(context, context.packageName + "." + BuildConfig.APPLICATION_ID + ".fileprovider", photoFile)
             val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoURI)
             cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
