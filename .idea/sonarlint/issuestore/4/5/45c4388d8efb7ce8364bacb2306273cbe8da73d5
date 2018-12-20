@@ -1,6 +1,0 @@
-
-Vkotlin:S1144"ARemove this unused private "getRealPathFromURI_API11to18" method.(บ“ง7
-vkotlin:S100"bRename function "getRealPathFromURI_API11to18" to match the regular expression ^[a-z][a-zA-Z0-9]*$(บ“ง7
-lkotlin:S117"RRename this local variable to match the regular expression "^[_a-z][a-zA-Z0-9]*$".(Û…ฬ๛ÿÿÿÿ
-mkotlin:S3776"RRefactor this method to reduce its Cognitive Complexity from 37 to the 15 allowed.(จำ๛ÿÿÿÿ
-xkotlin:S100"^Rename function "getRealPathFromURI_API19" to match the regular expression ^[a-z][a-zA-Z0-9]*$(จำ๛ÿÿÿÿ
