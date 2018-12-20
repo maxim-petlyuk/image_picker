@@ -7,21 +7,19 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
 import com.picker.file.BuildConfig
 import com.picker.file.FilePickerConstants
 import com.picker.file.PickerResult
 import com.picker.file.exceptions.PermissionNotGrantedException
-import com.picker.file.exceptions.RepeatRequiresPermission
+import com.picker.file.exceptions.RepeatRequiresPermissionException
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import io.reactivex.SingleOnSubscribe
 import io.reactivex.functions.BiPredicate
 import java.io.File
 import java.io.IOException
-import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,7 +30,7 @@ class CameraPicker : BaseFilePicker() {
         lifeCycleSet.add(onSubscribe)
         return Single.create<PickerResult>(onSubscribe)
                 .retry(BiPredicate { count, error ->
-                    return@BiPredicate error is RepeatRequiresPermission
+                    return@BiPredicate error is RepeatRequiresPermissionException
                 })
     }
 
@@ -40,6 +38,9 @@ class CameraPicker : BaseFilePicker() {
         val onSubscribe = RxCameraPickerOnSubscribe(fragment)
         lifeCycleSet.add(onSubscribe)
         return Single.create<PickerResult>(onSubscribe)
+                .retry(BiPredicate { count, error ->
+                    return@BiPredicate error is RepeatRequiresPermissionException
+                })
     }
 
     private inner class RxCameraPickerOnSubscribe(private val pickerContext: Any) : SingleOnSubscribe<PickerResult>, LifeCycle {
@@ -54,7 +55,7 @@ class CameraPicker : BaseFilePicker() {
                 if (permissionGranted) {
                     doPick(pickerContext, emitter)
                 } else {
-                    requestPermission(pickerContext)
+                    requestPermission(pickerContext, Manifest.permission.CAMERA)
                 }
             } catch (error: Throwable) {
                 if (!emitter.isDisposed) {
@@ -101,16 +102,6 @@ class CameraPicker : BaseFilePicker() {
             return image
         }
 
-        private fun requestPermission(pickerContext: Any) {
-            if (pickerContext is Activity) {
-                ActivityCompat.requestPermissions(pickerContext, arrayOf(Manifest.permission.CAMERA), FilePickerConstants.REQUEST_CODE_CAMERA_PERMISSIONS)
-            }
-
-            if (pickerContext is Fragment) {
-                pickerContext.requestPermissions(arrayOf(Manifest.permission.CAMERA), FilePickerConstants.REQUEST_CODE_CAMERA_PERMISSIONS)
-            }
-        }
-
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (resultCode != Activity.RESULT_OK) {
                 return
@@ -140,7 +131,7 @@ class CameraPicker : BaseFilePicker() {
                         if (!singleEmitter.isDisposed) {
                             val cameraPermissionGranted = isRequestedPermissionGranted(permissions, grantResults, Manifest.permission.CAMERA)
                             if (cameraPermissionGranted) {
-                                singleEmitter.onError(RepeatRequiresPermission())
+                                singleEmitter.onError(RepeatRequiresPermissionException())
                             } else {
                                 singleEmitter.onError(PermissionNotGrantedException())
                             }

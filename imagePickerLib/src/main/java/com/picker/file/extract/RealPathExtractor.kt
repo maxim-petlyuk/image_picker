@@ -11,17 +11,24 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
+import com.picker.file.exceptions.ExtractFilePathException
 
 class RealPathExtractor {
 
-    fun getRealPath(context: Context, fileUri: Uri): PickedFile? {
-        return getRealPathFromURI_API19(context, fileUri)
+    @Throws(ExtractFilePathException::class)
+    fun getRealPath(context: Context, fileUri: Uri): PickedFile {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return getRealPathFromURI_API19(context, fileUri) ?: throw ExtractFilePathException()
+        }
+
+        return LocalFile(getRealPathFromURI_API11to18(context, fileUri))
     }
 
     @SuppressLint("NewApi")
-    private fun getRealPathFromURI_API11to18(context: Context, contentUri: Uri): String? {
+    @Throws(ExtractFilePathException::class)
+    private fun getRealPathFromURI_API11to18(context: Context, contentUri: Uri): String {
         val proj = arrayOf(MediaStore.Images.Media.DATA)
-        var result: String? = null
+        lateinit var result: String
 
         val cursorLoader = CursorLoader(context, contentUri, proj, null, null, null)
         val cursor = cursorLoader.loadInBackground()
@@ -31,6 +38,10 @@ class RealPathExtractor {
             cursor.moveToFirst()
             result = cursor.getString(column_index)
             cursor.close()
+        }
+
+        if (TextUtils.isEmpty(result)) {
+            throw ExtractFilePathException();
         }
 
         return result

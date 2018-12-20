@@ -7,11 +7,13 @@ import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.util.ArraySet
-import java.lang.IllegalArgumentException
+import com.picker.file.FilePickerConstants
+import com.picker.file.extract.RealPathExtractor
 
 abstract class BaseFilePicker : FilePicker {
 
     val lifeCycleSet: MutableSet<LifeCycle> = ArraySet()
+    val filePathExtractor = RealPathExtractor()
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         lifeCycleSet.onEach { it.onActivityResult(requestCode, resultCode, data) }
@@ -19,6 +21,16 @@ abstract class BaseFilePicker : FilePicker {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         lifeCycleSet.onEach { it.onRequestPermissionsResult(requestCode, permissions, grantResults) }
+    }
+
+    internal fun requestPermission(pickerContext: Any, vararg permission: String) {
+        if (pickerContext is Activity) {
+            ActivityCompat.requestPermissions(pickerContext, permission, FilePickerConstants.REQUEST_CODE_CAMERA_PERMISSIONS)
+        }
+
+        if (pickerContext is Fragment) {
+            pickerContext.requestPermissions(permission, FilePickerConstants.REQUEST_CODE_CAMERA_PERMISSIONS)
+        }
     }
 
     @Throws(IllegalArgumentException::class)

@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        mResultPath.set(String.format("error [%s]", throwable.getCause()));
+                        mResultPath.set(String.format("error [%s]", throwable.getClass().getName()));
                         throwable.printStackTrace();
                     }
                 });
