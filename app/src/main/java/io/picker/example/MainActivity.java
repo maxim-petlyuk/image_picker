@@ -2,6 +2,9 @@ package io.picker.example;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
+import android.databinding.ObservableField;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,20 +17,25 @@ import com.picker.file.FilePickerDelegate;
 import com.picker.file.PickerResult;
 import com.picker.file.factory.FileSourceFactory;
 import com.picker.file.factory.FileSourceType;
+import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
 
+import io.picker.example.databinding.ActivityMainBinding;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
     private FilePickerDelegate mFilePickerDelegate;
+    private ObservableField<String> mResultPath = new ObservableField<>("");
+    private ActivityMainBinding mBinding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding.setHandler(this);
 
         findViewById(R.id.btnPick).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,11 +74,14 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Consumer<PickerResult>() {
                     @Override
                     public void accept(PickerResult pickerResult) throws Exception {
-
+                        String path = pickerResult.getFilePath().toString();
+                        Picasso.get().load(path).config(Bitmap.Config.RGB_565).fit().centerCrop().into(mBinding.ivResult);
+                        mResultPath.set(pickerResult.getFilePath().toString());
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
+                        mResultPath.set(String.format("error [%s]", throwable.getCause()));
                         throwable.printStackTrace();
                     }
                 });
@@ -92,5 +103,9 @@ public class MainActivity extends AppCompatActivity {
         if (mFilePickerDelegate != null) {
             mFilePickerDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    public ObservableField<String> getResultPath() {
+        return mResultPath;
     }
 }

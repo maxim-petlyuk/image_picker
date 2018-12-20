@@ -1,7 +1,9 @@
 *.iml
 gradle
 gradle.properties
-build
 local.properties
+build
 gradlew.bat
 gradlew
+.idea
+.gradle

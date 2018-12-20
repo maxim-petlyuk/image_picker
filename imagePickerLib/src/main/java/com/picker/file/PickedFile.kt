@@ -1,3 +1,5 @@
 package com.picker.file
 
-data class PickerResult(private val filePath: String)
+import android.net.Uri
+
+data class PickerResult(val filePath: Uri)
