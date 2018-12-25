@@ -1,14 +1,16 @@
 package com.picker.file.source
 
 import android.app.Activity
+import android.os.Parcelable
 import android.support.v4.app.Fragment
 import com.picker.file.PickerResult
-import com.picker.file.source.LifeCycle
-import io.reactivex.Single
+import io.reactivex.subjects.Subject
 
-interface FilePicker : LifeCycle {
+interface FilePicker : LifeCycle, Parcelable {
 
-    fun pickFile(activity: Activity): Single<PickerResult>
+    var pickerResultSubject: Subject<PickerResult>?
 
-    fun pickFile(fragment: Fragment): Single<PickerResult>
+    fun pickFile(activity: Activity)
+
+    fun pickFile(fragment: Fragment)
 }

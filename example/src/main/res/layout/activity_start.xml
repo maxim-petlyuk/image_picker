@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="handler"
+            type="io.picker.example.StartActivity"/>
+    </data>
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        tools:context=".PickerActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginBottom="50dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_image_selector"/>
+
+            <Button
+                android:id="@+id/btnFromAct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{() -> handler.onClick(btnFromAct)}"
+                android:text="from Activity"/>
+
+            <Button
+                android:id="@+id/btnFromFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{() -> handler.onClick(btnFromFragment)}"
+                android:text="from Fragment"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

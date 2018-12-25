@@ -2,26 +2,23 @@ package com.picker.file.source
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
-import android.support.v4.util.ArraySet
-import com.picker.file.FilePickerConstants
+import com.picker.file.PickerResult
 import com.picker.file.extract.RealPathExtractor
+import io.reactivex.subjects.Subject
 
 abstract class BaseFilePicker : FilePicker {
 
-    val lifeCycleSet: MutableSet<LifeCycle> = ArraySet()
     val filePathExtractor = RealPathExtractor()
+    protected var pickerSubject: Subject<PickerResult>? = null
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        lifeCycleSet.onEach { it.onActivityResult(requestCode, resultCode, data) }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        lifeCycleSet.onEach { it.onRequestPermissionsResult(requestCode, permissions, grantResults) }
-    }
+    override var pickerResultSubject: Subject<PickerResult>?
+        get() = pickerSubject
+        set(value) {
+            pickerSubject = value
+        }
 
     internal fun requestPermission(pickerContext: Any, requestCode: Int, vararg permission: String) {
         if (pickerContext is Activity) {

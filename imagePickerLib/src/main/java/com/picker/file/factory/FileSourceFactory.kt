@@ -1,16 +1,15 @@
 package com.picker.file.factory
 
-import com.picker.file.source.GalleryPicker
 import com.picker.file.source.CameraPicker
 import com.picker.file.source.FilePicker
 
-object FileSourceFactory {
+internal object FileSourceFactory {
 
     @JvmStatic
-    fun createImageSource(sourceType: FileSourceType): FilePicker {
+    internal fun createFilePicker(sourceType: FileSourceType): FilePicker {
         when (sourceType) {
             FileSourceType.CAMERA -> return CameraPicker()
-            FileSourceType.GALLERY -> return GalleryPicker()
+//            FileSourceType.GALLERY -> return GalleryPicker()
             else -> throw RuntimeException()
         }
     }

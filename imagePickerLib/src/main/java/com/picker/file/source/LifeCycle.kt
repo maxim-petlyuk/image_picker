@@ -6,5 +6,5 @@ interface LifeCycle {
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
 
-    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray)
+    fun onRequestPermissionsResult(pickerContext: Any, requestCode: Int, permissions: Array<out String>, grantResults: IntArray)
 }

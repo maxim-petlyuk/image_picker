@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+            name="handler"
+            type="io.picker.example.StartActivity"/>
+    </data>
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="50dp"
+        tools:context=".EmptyActivity">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="The purpose of this activity to test,\nthat picker events are not duplicated after subscribing on changes!\n\nThe image reuslt should disappear when you press back button"
+            android:lineSpacingExtra="4dp"
+            android:textSize="16sp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_image_selector"/>
+
+    </FrameLayout>
+
+</layout>
