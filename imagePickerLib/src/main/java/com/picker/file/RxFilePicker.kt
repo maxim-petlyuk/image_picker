@@ -14,14 +14,16 @@ import com.picker.file.rx.AsyncSingleSubject
 import com.picker.file.source.FilePicker
 import com.picker.file.source.LifeCycle
 import io.reactivex.Single
+import io.reactivex.subjects.Subject
 
 open class RxFilePicker : LifeCycle {
 
-    private val pickerResultSubject = AsyncSingleSubject.create<PickerResult>()
+    private lateinit var pickerResultSubject : Subject<PickerResult>
     private val filePathExtractor = RealPathExtractor()
     private var picker: FilePicker? = null
 
     fun fromSource(sourceType: FileSourceType): RxFilePicker {
+        pickerResultSubject = AsyncSingleSubject.create<PickerResult>()
         picker = FileSourceFactory.createFilePicker(sourceType)
         picker?.pickerResultSubject = pickerResultSubject
         return this
