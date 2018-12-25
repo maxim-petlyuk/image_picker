@@ -6,12 +6,10 @@ import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import com.picker.file.PickerResult
-import com.picker.file.extract.RealPathExtractor
 import io.reactivex.subjects.Subject
 
 abstract class BaseFilePicker : FilePicker {
 
-    val filePathExtractor = RealPathExtractor()
     protected var pickerSubject: Subject<PickerResult>? = null
 
     override var pickerResultSubject: Subject<PickerResult>?
