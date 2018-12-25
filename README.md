@@ -118,10 +118,11 @@ Don`t forget to call a few lifecycle methods:
    ```
    
    # Features
+   - support of loading image files from some external sources as google disk, google photos - you will get the real file path as a result;
    - encapsulated the logic with permissions. No need to write boilerplate code in your project;
    - work with FileProvider is already in the library. Don`t worry about it;
-   - support the mode **"don`t keep activity"**
-   - can be used from fragment or activity
+   - support the mode **"don`t keep activity"**;
+   - can be used from fragment or activity;
    
    # Usage
    The main class that has control over the pick process is **RxFilePicker**. 
