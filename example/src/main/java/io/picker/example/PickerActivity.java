@@ -64,7 +64,7 @@ public class PickerActivity extends AppCompatActivity {
 
         Log.d(TAG, "onStart");
 
-        mCompositeDisposable.add(mRxFilePicker.getPickerFileReady()
+        mCompositeDisposable.add(mRxFilePicker.getPickerFileReady(this)
                 .subscribe(new Consumer<PickerResult>() {
                     @Override
                     public void accept(PickerResult pickerResult) throws Exception {

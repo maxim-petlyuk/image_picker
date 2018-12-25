@@ -109,7 +109,7 @@ public class PickerFragmentActivity extends AppCompatActivity {
             Log.d(TAG, "onResume");
 
             mCompositeDisposable = new CompositeDisposable();
-            mCompositeDisposable.add(mRxFilePicker.getPickerFileReady()
+            mCompositeDisposable.add(mRxFilePicker.getPickerFileReady(getContext())
                     .subscribe(new Consumer<PickerResult>() {
                         @Override
                         public void accept(PickerResult pickerResult) throws Exception {
