@@ -111,6 +111,9 @@ Don`t forget to call a few lifecycle methods:
    ```groovy
    dependencies {
        implementation 'com.github.mpetlyuk:image_picker:$latest_version'
+       
+       implementation 'io.reactivex.rxjava2:rxkotlin://v2+'
+       implementation 'io.reactivex.rxjava2:rxandroid://v2+'
    }
    ```
    
