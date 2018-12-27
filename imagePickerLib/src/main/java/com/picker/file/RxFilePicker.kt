@@ -6,44 +6,84 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.picker.file.extentions.inBackground
 import com.picker.file.extract.RealPathExtractor
 import com.picker.file.factory.FileSourceFactory
 import com.picker.file.factory.FileSourceType
-import com.picker.file.rx.AsyncSingleSubject
 import com.picker.file.source.FilePicker
 import com.picker.file.source.LifeCycle
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.AsyncSubject
 import io.reactivex.subjects.Subject
 
 open class RxFilePicker : LifeCycle {
 
-    private lateinit var pickerResultSubject : Subject<PickerResult>
+    private var pickerResultSubject: Subject<PickerResult>? = null
     private val filePathExtractor = RealPathExtractor()
     private var picker: FilePicker? = null
 
+    companion object {
+
+        @Volatile
+        private var instance: RxFilePicker? = null
+
+        @JvmStatic
+        fun getInstance(): RxFilePicker =
+                instance ?: synchronized(this) {
+                    instance ?: buildInstance().also { instance = it }
+                }
+
+        private fun buildInstance() = RxFilePicker()
+    }
+
     fun fromSource(sourceType: FileSourceType): RxFilePicker {
-        pickerResultSubject = AsyncSingleSubject.create<PickerResult>()
         picker = FileSourceFactory.createFilePicker(sourceType)
-        picker?.pickerResultSubject = pickerResultSubject
         return this
     }
 
-    fun pickFile(activity: Activity) = picker?.pickFile(activity)
-            ?: throw RuntimeException("Picker is not initialized")
+    fun pickFile(activity: Activity): Single<PickerResult> {
+        pickerResultSubject = AsyncSubject.create<PickerResult>()
 
-    fun pickFile(fragment: Fragment) = picker?.pickFile(fragment)
-            ?: throw RuntimeException("Picker is not initialized")
+        picker?.let { safePicker ->
+            safePicker.setResultCallback(pickerResultSubject)
+            safePicker.pickFile(activity)
+        } ?: throw RuntimeException("Picker is not initialized")
 
-    fun getPickerFileReady(context: Context): Single<PickerResult> =
-            pickerResultSubject
-                    .flatMap {
-                        return@flatMap filePathExtractor.getRealPath(context, it.filePath).getFile(context)
-                                .inBackground()
+        return decorateResult(activity, pickerResultSubject!!)
+    }
+
+    fun pickFile(fragment: Fragment): Single<PickerResult> {
+        pickerResultSubject = AsyncSubject.create<PickerResult>()
+
+        picker?.let { safePicker ->
+            safePicker.setResultCallback(pickerResultSubject)
+            safePicker.pickFile(fragment)
+        } ?: throw RuntimeException("Picker is not initialized")
+
+        return decorateResult(fragment.context, pickerResultSubject!!)
+    }
+
+    private fun decorateResult(context: Context?, pickerSubscription: Subject<PickerResult>): Single<PickerResult> {
+        return pickerSubscription
+                .singleOrError()
+                .flatMap { result ->
+                    context?.let { context ->
+                        return@flatMap filePathExtractor.getRealPath(context, result.filePath)
+                                .getFile(context)
                                 .map { pickedFile -> PickerResult(Uri.fromFile(pickedFile)) }
-                                .toObservable()
+                    } ?: run {
+                        return@flatMap Single.error<PickerResult>(IllegalStateException("Context is null"))
                     }
-                    .singleOrError()
+                }
+    }
+
+    fun hasActiveSubscription() = pickerResultSubject != null
+
+    fun getActiveSubscription(context: Context?): Single<PickerResult> {
+        val activeSubctiption = pickerResultSubject!!
+        pickerResultSubject = null
+        return decorateResult(context, activeSubctiption)
+    }
 
     fun onSaveInstanceState(outState: Bundle) {
         picker?.let { filePicker -> outState.putParcelable(FilePickerConstants.ARG_PICKER, picker) }
@@ -51,7 +91,6 @@ open class RxFilePicker : LifeCycle {
 
     fun onRestoreInstanceState(savedInstanceState: Bundle) {
         picker = savedInstanceState.getParcelable(FilePickerConstants.ARG_PICKER) as FilePicker?
-        picker?.pickerResultSubject = pickerResultSubject
     }
 
     override fun onRequestPermissionsResult(pickerContext: Any, requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -44,68 +44,38 @@ enum class FileSourceType {
 }
 ```
 
-You can choose the source via the next method:
+To initiate the pick action:
 ```
-open class RxFilePicker {
-
-    fun fromSource(sourceType: FileSourceType): RxFilePicker
-}
+mCompositeDisposable.add(RxFilePicker.getInstance()
+    .fromSource(FileSourceType.GALLERY)
+    .pickFile(/* activity or fragment */)
+    .subscribe(mPickerSuccessConsumer, mPickerErrorConsumer));
 ```
 
-To initiate the pick action use one of the available methods:
+If you want to support **don`t keep activity**, check on active subscriptions in the onStart() or onResume() lifecycle methods. 
+If yoy have any questions, check at the implementation in the example app in this repo. 
 ```
-open class RxFilePicker {
-    fun pickFile(activity: Activity)
-
-    fun pickFile(fragment: Fragment)
+if (RxFilePicker.getInstance().hasActiveSubscription()) {
+    mCompositeDisposable.add(RxFilePicker.getInstance().getActiveSubscription(getContext())
+    .subscribe());
 }
 ```
 
 Don`t forget to call a few lifecycle methods:
 ```
     ...
-    private RxFilePicker mRxFilePicker = new RxFilePicker();
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        mRxFilePicker.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        mRxFilePicker.onSaveInstanceState(outState);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        mRxFilePicker.onActivityResult(requestCode, resultCode, data);
+        RxFilePicker.getInstance().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        mRxFilePicker.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+        RxFilePicker.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
-```# Pick images from Gallery & Camera
-   
-   # Download
-   [![](https://jitpack.io/v/mpetlyuk/image_picker.svg)](https://jitpack.io/#mpetlyuk/image_picker)
-   
-   ## Gradle
-   
-   #### Step 1:
-   Add it in your root build.gradle at the end of repositories:
-   ```groovy
-   allprojects {
-       repositories {
-           maven { url 'https://jitpack.io' }
-       }
-   }
 ```

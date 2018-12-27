@@ -47,7 +47,6 @@ public class PickerFragmentActivity extends AppCompatActivity {
     public static class PickerFragment extends Fragment {
 
         private final String TAG = "RxFragmentPicker";
-        private RxFilePicker mRxFilePicker = new RxFilePicker();
         private CompositeDisposable mCompositeDisposable;
         private ObservableField<String> mResultPath = new ObservableField<>("");
         private FragmentPickerBinding mBinding;
@@ -92,42 +91,17 @@ public class PickerFragmentActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-            super.onViewStateRestored(savedInstanceState);
-
-            Log.d(TAG, "onViewStateRestored");
-
-            if (savedInstanceState != null) {
-                mRxFilePicker.onRestoreInstanceState(savedInstanceState);
-            }
-        }
-
-        @Override
         public void onResume() {
             super.onResume();
 
             Log.d(TAG, "onResume");
 
             mCompositeDisposable = new CompositeDisposable();
-            mCompositeDisposable.add(mRxFilePicker.getPickerFileReady(getContext())
-                    .subscribe(new Consumer<PickerResult>() {
-                        @Override
-                        public void accept(PickerResult pickerResult) throws Exception {
-                            Log.d(TAG, "onNext");
 
-                            String path = pickerResult.getFilePath().toString();
-                            Picasso.get().load(path).config(Bitmap.Config.RGB_565).fit().centerCrop().into(mBinding.ivResult);
-                            mResultPath.set(pickerResult.getFilePath().toString());
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            Log.d(TAG, "onError");
-
-                            mResultPath.set(String.format("error [%s]", throwable.getClass().getName()));
-                            throwable.printStackTrace();
-                        }
-                    }));
+            if (RxFilePicker.getInstance().hasActiveSubscription()) {
+                mCompositeDisposable.add(RxFilePicker.getInstance().getActiveSubscription(getContext())
+                        .subscribe(mPickerSuccessConsumer, mPickerErrorConsumer));
+            }
         }
 
         @Override
@@ -140,21 +114,12 @@ public class PickerFragmentActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onSaveInstanceState(Bundle outState) {
-            super.onSaveInstanceState(outState);
-
-            Log.d(TAG, "onSaveInstanceState");
-
-            mRxFilePicker.onSaveInstanceState(outState);
-        }
-
-        @Override
         public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
 
             Log.d(TAG, "onActivityResult");
 
-            mRxFilePicker.onActivityResult(requestCode, resultCode, data);
+            RxFilePicker.getInstance().onActivityResult(requestCode, resultCode, data);
         }
 
         @Override
@@ -163,7 +128,7 @@ public class PickerFragmentActivity extends AppCompatActivity {
 
             Log.d(TAG, "onRequestPermissionsResult");
 
-            mRxFilePicker.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+            RxFilePicker.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults);
         }
 
         @Override
@@ -183,17 +148,45 @@ public class PickerFragmentActivity extends AppCompatActivity {
                             dialog.dismiss();
                             switch (which) {
                                 case 0:
-                                    mRxFilePicker.fromSource(FileSourceType.GALLERY).pickFile(PickerFragment.this);
+                                    mCompositeDisposable.add(RxFilePicker.getInstance()
+                                            .fromSource(FileSourceType.GALLERY)
+                                            .pickFile(PickerFragment.this)
+                                            .subscribe(mPickerSuccessConsumer, mPickerErrorConsumer));
                                     break;
 
                                 case 1:
-                                    mRxFilePicker.fromSource(FileSourceType.CAMERA).pickFile(PickerFragment.this);
+                                    mCompositeDisposable.add(RxFilePicker.getInstance()
+                                            .fromSource(FileSourceType.CAMERA)
+                                            .pickFile(PickerFragment.this)
+                                            .subscribe(mPickerSuccessConsumer, mPickerErrorConsumer));
                                     break;
                             }
                         }
                     })
                     .show();
         }
+
+
+        private Consumer<PickerResult> mPickerSuccessConsumer = new Consumer<PickerResult>() {
+            @Override
+            public void accept(PickerResult pickerResult) throws Exception {
+                Log.d(TAG, "onNext");
+
+                String path = pickerResult.getFilePath().toString();
+                Picasso.get().load(path).config(Bitmap.Config.RGB_565).fit().centerCrop().into(mBinding.ivResult);
+                mResultPath.set(pickerResult.getFilePath().toString());
+            }
+        };
+
+        private Consumer<Throwable> mPickerErrorConsumer = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Log.d(TAG, "onError");
+
+                mResultPath.set(String.format("error [%s]", throwable.getClass().getName()));
+                throwable.printStackTrace();
+            }
+        };
 
         public ObservableField<String> getResultPath() {
             return mResultPath;

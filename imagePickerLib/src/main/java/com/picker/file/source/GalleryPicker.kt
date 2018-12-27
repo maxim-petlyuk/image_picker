@@ -39,7 +39,7 @@ class GalleryPicker() : BaseFilePicker() {
                 if (isPermissionGranted) {
                     requestPick(pickerContext)
                 } else {
-                    pickerResultSubject?.onError(PermissionNotGrantedException())
+                    resultSubject?.onError(PermissionNotGrantedException())
                 }
             }
         }
@@ -53,10 +53,10 @@ class GalleryPicker() : BaseFilePicker() {
         when (requestCode) {
             FilePickerConstants.REQUEST_CODE_GALLERY -> {
                 data?.data?.let { filePath ->
-                    pickerResultSubject?.onNext(PickerResult(filePath))
-                    pickerResultSubject?.onComplete()
+                    resultSubject?.onNext(PickerResult(filePath))
+                    resultSubject?.onComplete()
                 } ?: run {
-                    pickerResultSubject?.onError(RuntimeException("There is no file result"))
+                    resultSubject?.onError(RuntimeException("There is no file result"))
                 }
             }
         }
@@ -78,7 +78,7 @@ class GalleryPicker() : BaseFilePicker() {
         } else if (pickerContext is Fragment && pickerContext.context != null) {
             pickerContext.startActivityForResult(createIntent(), FilePickerConstants.REQUEST_CODE_GALLERY)
         } else {
-            pickerSubject?.onError(IllegalArgumentException("pickerContext could be only Activity or Fragment"))
+            resultSubject?.onError(IllegalArgumentException("pickerContext could be only Activity or Fragment"))
         }
     }
 

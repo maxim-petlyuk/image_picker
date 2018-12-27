@@ -8,7 +8,7 @@ import io.reactivex.subjects.Subject
 
 interface FilePicker : LifeCycle, Parcelable {
 
-    var pickerResultSubject: Subject<PickerResult>?
+    fun setResultCallback(resultCallback: Subject<PickerResult>?)
 
     fun pickFile(activity: Activity)
 

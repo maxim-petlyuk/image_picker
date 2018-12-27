@@ -10,13 +10,11 @@ import io.reactivex.subjects.Subject
 
 abstract class BaseFilePicker : FilePicker {
 
-    protected var pickerSubject: Subject<PickerResult>? = null
+    protected var resultSubject: Subject<PickerResult>? = null
 
-    override var pickerResultSubject: Subject<PickerResult>?
-        get() = pickerSubject
-        set(value) {
-            pickerSubject = value
-        }
+    override fun setResultCallback(callback: Subject<PickerResult>?) {
+        resultSubject = callback
+    }
 
     internal fun requestPermission(pickerContext: Any, requestCode: Int, vararg permission: String) {
         if (pickerContext is Activity) {

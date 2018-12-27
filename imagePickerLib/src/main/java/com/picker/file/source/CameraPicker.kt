@@ -50,10 +50,10 @@ class CameraPicker() : BaseFilePicker() {
         when (requestCode) {
             FilePickerConstants.REQUEST_CODE_DEVICE_CAMERA -> {
                 savedFilePath?.let { filePath ->
-                    pickerSubject?.onNext(PickerResult(filePath))
-                    pickerSubject?.onComplete()
+                    resultSubject?.onNext(PickerResult(filePath))
+                    resultSubject?.onComplete()
                 } ?: run {
-                    pickerSubject?.onError(RuntimeException("There is no file result"))
+                    resultSubject?.onError(RuntimeException("There is no file result"))
                 }
             }
         }
@@ -66,7 +66,7 @@ class CameraPicker() : BaseFilePicker() {
                 if (cameraPermissionGranted) {
                     requestPick(pickerContext)
                 } else {
-                    pickerSubject?.onError(PermissionNotGrantedException())
+                    resultSubject?.onError(PermissionNotGrantedException())
                 }
             }
         }
@@ -78,7 +78,7 @@ class CameraPicker() : BaseFilePicker() {
         } else if (pickerContext is Fragment && pickerContext.context != null) {
             pickerContext.startActivityForResult(createIntent(pickerContext.context!!), FilePickerConstants.REQUEST_CODE_DEVICE_CAMERA)
         } else {
-            pickerSubject?.onError(IllegalArgumentException("pickerContext could be only Activity or Fragment"))
+            resultSubject?.onError(IllegalArgumentException("pickerContext could be only Activity or Fragment"))
         }
     }
 
