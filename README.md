@@ -57,7 +57,7 @@ If yoy have any questions, check at the implementation in the example app in thi
 ```
 if (RxFilePicker.getInstance().hasActiveSubscription()) {
     mCompositeDisposable.add(RxFilePicker.getInstance().getActiveSubscription(getContext())
-    .subscribe());
+        .subscribe());
 }
 ```
 
