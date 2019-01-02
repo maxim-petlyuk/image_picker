@@ -53,7 +53,7 @@ mCompositeDisposable.add(RxFilePicker.getInstance()
 ```
 
 If you want to support **don`t keep activity**, check on active subscriptions in the onStart() or onResume() lifecycle methods. 
-If yoy have any questions, check at the implementation in the example app in this repo. 
+If you have any questions, check at the implementation in the example app in this repo. 
 ```
 if (RxFilePicker.getInstance().hasActiveSubscription()) {
     mCompositeDisposable.add(RxFilePicker.getInstance().getActiveSubscription(getContext())
@@ -61,7 +61,7 @@ if (RxFilePicker.getInstance().hasActiveSubscription()) {
 }
 ```
 
-Don`t forget to call a few lifecycle methods:
+**Don`t forget to call a few lifecycle methods:**
 ```
     ...
 
