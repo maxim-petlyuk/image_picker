@@ -2,9 +2,11 @@ package com.picker.file.source
 
 import android.Manifest
 import android.app.Activity
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.Parcel
 import android.os.Parcelable
@@ -91,9 +93,16 @@ class CameraPicker() : BaseFilePicker() {
 
         savedFilePath = Uri.fromFile(photoFile)
         val photoURI = FileProvider.getUriForFile(context, context.packageName + "." + BuildConfig.APPLICATION_ID + ".fileprovider", photoFile)
+
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoURI)
         cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+            cameraIntent.setClipData(ClipData.newRawUri("", photoURI))
+            cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
         return cameraIntent
     }
 
