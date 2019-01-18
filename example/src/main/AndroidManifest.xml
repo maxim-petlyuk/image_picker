@@ -34,6 +34,10 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".Base64ConverterActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".EmptyActivity"
             android:screenOrientation="portrait"/>
 

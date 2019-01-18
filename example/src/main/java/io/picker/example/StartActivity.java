@@ -28,6 +28,10 @@ public class StartActivity extends AppCompatActivity {
             case R.id.btnFromFragment:
                 startActivity(new Intent(this, PickerFragmentActivity.class));
                 break;
+
+            case R.id.btnBase64:
+                startActivity(new Intent(this, Base64ConverterActivity.class));
+                break;
         }
     }
 }

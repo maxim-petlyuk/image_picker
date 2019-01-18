@@ -47,6 +47,14 @@
                 android:onClick="@{() -> handler.onClick(btnFromFragment)}"
                 android:text="from Fragment"/>
 
+            <Button
+                android:id="@+id/btnBase64"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{() -> handler.onClick(btnBase64)}"
+                android:text="To base64"/>
+
         </LinearLayout>
 
     </FrameLayout>
